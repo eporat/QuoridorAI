@@ -2,7 +2,6 @@ import tkinter as tk
 from functools import partial
 from itertools import chain
 from game import *
-from directions import DIRECTIONS
 from keycodes import KEYCODES
 
 class GUI:
@@ -72,7 +71,6 @@ class GUI:
     def move(self, event):
         if self.game.terminal:
             return
-
         i = int(event.x // self.CELL_SIZE)
         j = int(event.y // self.CELL_SIZE)
         direction = self.game.direction(i,j)
@@ -88,7 +86,7 @@ class GUI:
 
     def find_row_column(self, event):
         id_closest = event.widget.find_closest(event.x, event.y)[0]
-        return (id_closest, *self.find_row_column_by_id(id_closest))
+        return self.find_row_column_by_id(id_closest)
 
     def add_horizontal_wall(self, row, column):
         if self.game.play(WALL, column, row - 1, HORIZONTAL):
@@ -104,7 +102,7 @@ class GUI:
         if self.game.terminal:
             return
 
-        _, row, column = self.find_row_column(event)
+        row, column = self.find_row_column(event)
 
         self.add_horizontal_wall(row, column)
         self.refresh()
@@ -124,7 +122,7 @@ class GUI:
         if self.game.terminal:
             return
 
-        _, row, column = self.find_row_column(event)
+        row, column = self.find_row_column(event)
 
         self.add_vertical_wall(row, column)
         self.refresh()

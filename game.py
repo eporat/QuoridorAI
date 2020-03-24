@@ -17,32 +17,55 @@ class Game:
             self.graph.add_edge(b, a)
 
         self.players = [np.array([self.size // 2,0]), np.array([self.size // 2, self.size - 1])]
+        self.stone_counts = [10, 10]
         self.index = 0
         self.terminal = False
         self.special_edges = []
 
+    def place_horizontal(self, x, y):
+        edges = [((x, y), (x, y + 1)), ((x + 1, y), (x + 1, y + 1))]
+        if not all(self.graph.has_edge(*edge) for edge in edges):
+            return False
+        if not self.graph.has_edge((x,y), (x, y + 1)):
+            return False
+        self.graph.remove_edges_from(edges)
+
+        return edges
+
+    def place_vertical(self, x, y):
+        edges = [((x, y), (x + 1, y)), ((x, y + 1), (x + 1, y + 1))]
+        if not all(self.graph.has_edge(*edge) for edge in edges):
+            return False
+
+        if not self.graph.has_edge((x + 1,y), (x,y)):
+            return False
+
+        self.graph.remove_edges_from(edges)
+
+        return edges
+
     def place_wall(self, x, y, orientation):
+        if self.stone_counts[self.index] == 0:
+            return False
+
         if x == self.size - 1 or y == self.size - 1:
             return False
 
         if orientation == HORIZONTAL:
-            edges = [((x, y), (x, y + 1)), ((x + 1, y), (x + 1, y + 1))]
-            if not all(self.graph.has_edge(*edge) for edge in edges):
-                return False
-            if not self.graph.has_edge((x,y), (x, y + 1)):
-                return False
-            self.graph.remove_edges_from(edges)
+            edges = self.place_horizontal(x, y)
 
         elif orientation == VERTICAL:
-            edges = [((x, y), (x + 1, y)), ((x, y + 1), (x + 1, y + 1))]
-            if not all(self.graph.has_edge(*edge) for edge in edges):
-                return False
+            edges = self.place_vertical(x, y)
 
-            if not self.graph.has_edge((x + 1,y), (x,y)):
-                return False
+        if not self.check_connected():
+            self.graph.add_edges_from(edges)
+            return False
 
-            self.graph.remove_edges_from(edges)
+        self.stone_counts[self.index] -= 1
 
+        return True
+
+    def check_connected(self):
         # Make sure there are still ways to reach the end
         self.graph.remove_edges_from(self.special_edges)
 
@@ -51,11 +74,7 @@ class Game:
 
         self.graph.add_edges_from(self.special_edges)
 
-        if not any(node[1] == self.size - 1 for node in con1) or not any(node[1] == 0 for node in con2):
-            self.graph.add_edges_from(edges)
-            return False
-
-        return True
+        return any(y == self.size - 1 for (x,y) in con1) and any(y == 0 for (x,y) in con2)
 
     def move_player(self, direction):
         p = self.players[self.index]
@@ -65,9 +84,8 @@ class Game:
 
         self.players[self.index] += direction
 
-        if self.players[self.index][1] == (1 - self.size) * (self.index - 1):
+        if p[1] == (1 - self.size) * (self.index - 1):
             self.terminal = True
-            print("GAME OVER")
 
         return True
 
