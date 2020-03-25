@@ -23,7 +23,7 @@ class GUI:
         self.click_vertical = {}
         self.click_vertical = {}
         self.player_colors = ['white', 'black']
-        self.spacing = 20
+        self.spacing = self.CELL_SIZE * 0.2
 
         for column in range(self.game.size):
             for row in range(self.game.size):
@@ -81,7 +81,7 @@ class GUI:
         i = int(event.x // self.CELL_SIZE)
         j = int(event.y // self.CELL_SIZE)
         direction = self.game.direction(i, j)
-        self.game.play(MOVEMENT, direction)
+        self.game.play(MOVEMENT, *direction)
         self.refresh()
 
     def find_row_column_by_id(self, find_id):

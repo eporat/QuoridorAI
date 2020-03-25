@@ -1,7 +1,8 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
-
+from itertools import product
+from copy import deepcopy
 HORIZONTAL = 0
 VERTICAL = 1
 
@@ -18,34 +19,58 @@ class Game:
         self.players = [np.array([self.size // 2, 0]),
                         np.array([self.size // 2, self.size - 1])]
         self.wall_counts = [10, 10]
-        self.vertical_walls = []
-        self.horizontal_walls = []
+        self.vertical_walls = set()
+        self.horizontal_walls = set()
         self.index = 0
         self.terminal = False
         self.special_edges = []
 
-    def place_horizontal(self, x, y):
+    def getPossibleActions(self):
+        actions = []
+        p = self.players[self.index]
+        for cell in self.available_cells():
+            actions.append((MOVEMENT, cell[0] - p[0], cell[1] - p[1]))
+
+        for (x,y) in product(range(self.size - 1), range(self.size - 1)):
+            if self.is_valid_horizontal(x,y):
+                actions.append((WALL, x, y, HORIZONTAL))
+            if self.is_valid_vertical(x,y):
+                actions.append((WALL, x, y, VERTICAL))
+
+        return actions
+
+    def is_valid_horizontal(self, x, y):
         if (x,y) in self.vertical_walls:
             return
         edges = [((x, y), (x, y + 1)), ((x + 1, y), (x + 1, y + 1))]
-        if (x, y) in self.horizontal_walls or (x - 1, y) in self.horizontal_walls or (x + 1, y) in self.horizontal_walls:
-            return
+        # if (x, y) in self.horizontal_walls or (x - 1, y) in self.horizontal_walls or (x + 1, y) in self.horizontal_walls:
+        #     return
         if not all(self.graph.has_edge(*edge) for edge in edges):
             return
-        self.graph.remove_edges_from(edges)
 
         return edges
 
-    def place_vertical(self, x, y):
+    def is_valid_vertical(self, x, y):
         if (x,y) in self.horizontal_walls:
             return
         edges = [((x, y), (x + 1, y)), ((x, y + 1), (x + 1, y + 1))]
-        if (x, y) in self.vertical_walls or (x, y - 1) in self.horizontal_walls or (x, y + 1) in self.horizontal_walls:
-            return
+        # if (x, y) in self.vertical_walls or (x, y - 1) in self.horizontal_walls or (x, y + 1) in self.horizontal_walls:
+        #     return
         if not all(self.graph.has_edge(*edge) for edge in edges):
             return
-        self.graph.remove_edges_from(edges)
 
+    def place_horizontal(self, x, y):
+        edges = self.is_valid_horizontal(x, y)
+        if not edges:
+            return
+        self.graph.remove_edges_from(edges)
+        self.horizontal_walls.add((x,y))
+        return edges
+
+    def place_vertical(self, x, y):
+        edges = self.is_valid_vetical(x, y)
+        self.graph.remove_edges_from(edges)
+        self.vertical_walls.add((x,y))
         return edges
 
     def place_wall(self, x, y, orientation):
@@ -73,7 +98,8 @@ class Game:
         self.graph.add_edges_from(self.special_edges)
         return any(y == self.size - 1 for (x, y) in con1) and any(y == 0 for (x, y) in con2)
 
-    def move_player(self, direction):
+    def move_player(self, direction_x, direction_y):
+        direction = np.array([direction_x, direction_y])
         p = self.players[self.index]
         if not self.has_edge(p, p + direction):
             return False
@@ -83,7 +109,7 @@ class Game:
         return True
 
     def direction(self, i, j):
-        return np.array([i, j]) - self.players[self.index]
+        return i - self.players[self.index][0], j - self.players[self.index][1]
 
     def next_turn(self):
         self.index = 1 - self.index
@@ -92,7 +118,7 @@ class Game:
         if self.terminal:
             return
         if type == MOVEMENT:
-            valid = self.move_player(direction=param1)
+            valid = self.move_player(direction_x=param1, direction_y=param2)
         elif type == WALL:
             valid = self.place_wall(x=param1, y=param2, orientation=param3)
         if not valid:
@@ -136,3 +162,20 @@ class Game:
 
     def has_node(self, node):
         return self.graph.has_node(tuple(node))
+
+    def takeAction(self, action):
+        newGame = deepcopy(self)
+        newGame.play(*action)
+        return newGame
+
+    def isTerminal(self):
+        return self.terminal
+
+    def getReward(self):
+        return 1 - 2 * self.index # Maybe opposite!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    def __eq__(self, other):
+        x = self.wall_counts == other.wall_counts
+        y = all(np.array_equal(self.players[i], other.players[i]) for i in range(2))
+        z = self.index == other.index
+        return x and y and z
