@@ -17,33 +17,39 @@ class Game:
             self.graph.add_edge(b, a)
         self.players = [np.array([self.size // 2, 0]),
                         np.array([self.size // 2, self.size - 1])]
-        self.stone_counts = [10, 10]
+        self.wall_counts = [10, 10]
+        self.vertical_walls = []
+        self.horizontal_walls = []
         self.index = 0
         self.terminal = False
         self.special_edges = []
 
     def place_horizontal(self, x, y):
+        if (x,y) in self.vertical_walls:
+            return
         edges = [((x, y), (x, y + 1)), ((x + 1, y), (x + 1, y + 1))]
+        if (x, y) in self.horizontal_walls or (x - 1, y) in self.horizontal_walls or (x + 1, y) in self.horizontal_walls:
+            return
         if not all(self.graph.has_edge(*edge) for edge in edges):
-            return False
-        if not self.graph.has_edge((x, y), (x, y + 1)):
-            return False
+            return
         self.graph.remove_edges_from(edges)
 
         return edges
 
     def place_vertical(self, x, y):
+        if (x,y) in self.horizontal_walls:
+            return
         edges = [((x, y), (x + 1, y)), ((x, y + 1), (x + 1, y + 1))]
+        if (x, y) in self.vertical_walls or (x, y - 1) in self.horizontal_walls or (x, y + 1) in self.horizontal_walls:
+            return
         if not all(self.graph.has_edge(*edge) for edge in edges):
-            return False
-        if not self.graph.has_edge((x + 1, y), (x, y)):
-            return False
+            return
         self.graph.remove_edges_from(edges)
 
         return edges
 
     def place_wall(self, x, y, orientation):
-        if self.stone_counts[self.index] == 0:
+        if not self.wall_counts[self.index]:
             return False
         if x == self.size - 1 or y == self.size - 1:
             return False
@@ -51,10 +57,12 @@ class Game:
             edges = self.place_horizontal(x, y)
         elif orientation == VERTICAL:
             edges = self.place_vertical(x, y)
+        if not edges:
+            return False
         if not self.check_connected():
             self.graph.add_edges_from(edges)
             return False
-        self.stone_counts[self.index] -= 1
+        self.wall_counts[self.index] -= 1
         return True
 
     def check_connected(self):
