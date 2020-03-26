@@ -59,4 +59,4 @@ def convert(o):
     else: return o
 
 with open(f'saved-games/{date_time}.json', 'w+') as f:
-    json.dump(saved_game, f, default=convert)
+    json.dump(saved_game, f, default=convert, indent=2)
