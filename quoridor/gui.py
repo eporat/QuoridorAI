@@ -1,7 +1,7 @@
 import tkinter as tk
 from functools import partial
 from itertools import chain
-from game import Game, MOVEMENT, WALL, HORIZONTAL, VERTICAL
+from quoridor.game import Game, MOVEMENT, WALL, HORIZONTAL, VERTICAL
 
 class GUI:
     def __init__(self, root, game):

@@ -11,6 +11,7 @@ VERTICAL = 1
 MOVEMENT = 0
 WALL = 1
 
+WALL_SCORE = 0.1
 
 class Game(TwoPlayersGame):
     def __init__(self, size):
@@ -18,10 +19,6 @@ class Game(TwoPlayersGame):
         self.nplayer = 1
         # self.players = players
         self.graph = nx.grid_2d_graph(self.size, self.size)
-
-        for a, b in self.graph.edges():
-            self.graph.add_edge(b, a)
-
         self.players_loc = [np.array([self.size // 2, 0]),
                         np.array([self.size // 2, self.size - 1])]
         self.wall_counts = [10, 10]
@@ -242,11 +239,36 @@ class Game(TwoPlayersGame):
         con2 = nx.node_connected_component(self.graph, tuple(self.players_loc[1]))
         con2 = filter(lambda x: x[1] == 0, con2)
         d2 = min(nx.shortest_path_length(self.graph, tuple(self.players_loc[1]), node) for node in con2)
-        # d2 = nx.shortest_path_length(self.graph, tuple(self.players_loc[1]), (0, -1))        
+        # d2 = nx.shortest_path_length(self.graph, tuple(self.players_loc[1]), (0, -1))  
+        score_wall_counts = WALL_SCORE * (self.wall_counts[1] - self.wall_counts[0])     
+
         if self.index == 0:
-            return d2 - d1
+            return d2 - d1 - score_wall_counts
         else:
-            return d1 - d2
+            return d1 - d2 + score_wall_counts
+
+    def ttentry(self):
+        return (tuple(self.players_loc[0]), tuple(self.players_loc[1]), tuple(self.horizontal_walls), tuple(self.vertical_walls), tuple(self.wall_counts), self.terminal, self.index, self.nplayer)
+
+    def ttrestore(self, entry):
+        player_loc_0, player_loc_1, horizontal_walls, vertical_walls, wall_counts, terminal, index, nplayer = entry
+        self.graph = nx.grid_2d_graph(self.size, self.size)
+        self.players_loc[0] = np.array(player_loc_0)
+        self.players_loc[1] = np.array(player_loc_1)
+        self.horizontal_walls = set(horizontal_walls)
+        self.vertical_walls = set(vertical_walls)
+
+        for (x, y) in horizontal_walls:
+            self.graph.remove_edges_from(Game.edges(x, y, HORIZONTAL))
+        for (x, y) in vertical_walls:
+            self.graph.remove_edges_from(Game.edges(x, y, VERTICAL))
+               
+        self.wall_counts = list(wall_counts)
+        self.index = index
+        self.terminal = terminal
+        self.nplayer = nplayer
+        self.find_special_edges()
+        self.graph.add_edges_from(self.special_edges)
 
     def __eq__(self, other):
         x = self.wall_counts == other.wall_counts

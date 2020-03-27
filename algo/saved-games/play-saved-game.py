@@ -1,8 +1,8 @@
 import sys
-sys.path.append("../../")
 import json
-from game.game import Game
-from game.gui import GUI
+sys.path.insert(0,r'..\..')
+from quoridor.game import Game
+from quoridor.gui import GUI
 import tkinter as tk
 from sys import argv
 from datetime import datetime

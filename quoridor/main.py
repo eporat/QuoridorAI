@@ -7,7 +7,7 @@ import tkinter as tk
 def main():
     root = tk.Tk()
     game = Game(BOARD_SIZE)
-    gui = GUI(root, game)
+    GUI(root, game)
     root.mainloop()
 
 

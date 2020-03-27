@@ -1,7 +1,7 @@
 import sys
 sys.path.append("../")
-from game.game import *
-from easyAI import Negamax, NonRecursiveNegamax, DUAL, SSS
+from quoridor.game import *
+from easyAI import Negamax, NonRecursiveNegamax, DUAL, SSS, TT
 import time
 from sys import argv
 import argparse
@@ -33,8 +33,8 @@ type_2 = args.type_2
 depth_1 = int(args.depth_1)
 depth_2 = int(args.depth_2)
 
-players = [types[type_1](depth=depth_1, win_score=100), 
-           types[type_2](depth=depth_2, win_score=100)]
+players = [types[type_1](depth=depth_1, win_score=100, tt=TT()), 
+           types[type_2](depth=depth_2, win_score=100, tt=TT())]
 
 game = Game(size)
 moves = []
@@ -42,8 +42,11 @@ index = 0
 
 while not game.is_over():
     print("Playing move... ", end="")
+    start = time.time()
     move = players[index](game)
     print(move)
+    end = time.time()
+    print(f'{end - start} seconds elapsed')
     game.play_game(*move)
     moves.append(move)
     index = 1 - index
@@ -59,4 +62,4 @@ def convert(o):
     else: return o
 
 with open(f'saved-games/{date_time}.json', 'w+') as f:
-    json.dump(saved_game, f, default=convert, indent=2)
+    json.dump(saved_game, f, default=convert)
