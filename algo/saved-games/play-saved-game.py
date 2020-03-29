@@ -26,7 +26,6 @@ root = tk.Tk()
 
 gui = GUI(root, game, [None, None])
 
-
 def play_move():
     if moves == []:
         return

@@ -1,4 +1,5 @@
 from easyAI import MCTS, MTDf, MTDstep, SSS, Negamax, DictTT, TT, HashTT
+from mcts.mcts_pure import MCTSPlayer
 import sys
 import argparse
 
@@ -9,12 +10,12 @@ def Human(*args, **kwargs):
     return 'Human'
 
 players_dict = {
-    'MCTS': MCTS,
     'MTDf': MTDf,
     'MTDstep': MTDstep,
     'SSS': SSS,
     'Negamax': Negamax,
-    'Human': Human
+    'Human': Human,
+    'MCTSPlayer': MCTSPlayer
 }
 
 def parse_args(parser, commands):

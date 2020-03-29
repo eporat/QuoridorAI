@@ -14,7 +14,7 @@ VERTICAL = 1
 MOVEMENT = 0
 WALL = 1
 
-WALL_SCORE = 0.5
+WALL_SCORE = 0.5 
 DISTANCE_SCORE = 1
 
 DELTA = [(-2, 0), (2, 0), (0, 2), (0, -2), (-1, 1), (-1, -1), (1, -1), (1, 1), (0, 1), (0, -1), (1, 0), (-1, 0)]
@@ -35,6 +35,7 @@ class Game(TwoPlayersGame):
         self.special_edges = []
         self.end_loc = [self.size - 1, 0]
         self.actions = None
+        self.availables = self.possible_moves()
 
     def possible_moves(self):
         if self.is_terminal():
@@ -144,6 +145,7 @@ class Game(TwoPlayersGame):
         self.next_turn()
         self.find_special_edges()
         self.graph.add_edges_from(self.special_edges)
+        self.availables = self.possible_moves()
 
     def place_wall(self, x, y, orientation):
         if not self.wall_counts[self.index]:
@@ -197,6 +199,7 @@ class Game(TwoPlayersGame):
         self.next_turn()
         self.find_special_edges()
         self.graph.add_edges_from(self.special_edges)
+        self.availables = self.possible_moves()
         return True
 
     def available_cells(self):
@@ -248,6 +251,15 @@ class Game(TwoPlayersGame):
         self_copy = copy.deepcopy(self)
         self_copy.make_move(action)
         return self_copy
+
+    def game_end(self):
+        if self.is_terminal():
+            return True, 1 - self.index
+        else:
+            return False, -1
+
+    def get_current_player(self):
+        return self.index
 
     def scoring(self):
         if self.players_loc[0][1] == self.size - 1:

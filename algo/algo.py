@@ -33,17 +33,14 @@ saved_game['size'] = size
 saved_game['players'] = []
 
 for player in players:
-    if hasattr(player, 'depth'):
-        saved_game['players'].append(f"{player.__class__}-{player.depth}")
-    else:
-        saved_game['players'].append(f"{player.__class__}-{player.iterations}")
+    saved_game['players'].append("{player.__class__}")
 
 saved_game['moves'] = moves
 date_time = now.strftime("%d-%m-%Y-%H-%M-%S")
 
 
-for player in players:
-    player.tt
+for i, player in enumerate(players):
+    player.tt.tofile(f'{date_time}-{i+1}.data')
 
 def convert(o):
     if isinstance(o, np.int32): return int(o)  
