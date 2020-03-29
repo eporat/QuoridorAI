@@ -1,0 +1,1 @@
+python algo.py size 5 player1 --type MCTSPlayer player2 --type Negamax --depth 4
