@@ -3,10 +3,12 @@ from functools import partial
 from itertools import chain
 from quoridor.game import Game, MOVEMENT, WALL, HORIZONTAL, VERTICAL
 
+
 class GUI:
-    def __init__(self, root, game):
+    def __init__(self, root, game, players):
         self.root = root
         self.game = game
+        self.players = players
 
         self.canvas = tk.Canvas(self.root, width=500, height=500,
                                 borderwidth=0, highlightthickness=0, background='gray')
@@ -33,13 +35,13 @@ class GUI:
                 self.rect[row, column] = self.canvas.create_rectangle(
                     x1, y1, x2, y2, fill='brown', tag='square')
 
-        self.players = [None, None]
+        self.players_oval = [None, None]
         self.r = self.CELL_SIZE * 0.3
 
         for i, (x, y) in enumerate(self.game.players_loc):
             x = (x + 0.5) * self.CELL_SIZE
             y = (y + 0.5) * self.CELL_SIZE
-            self.players[i] = self.canvas.create_oval(
+            self.players_oval[i] = self.canvas.create_oval(
                 x - self.r, y - self.r, x + self.r, y + self.r)
 
         for column in range(self.game.size - 1):
@@ -63,7 +65,7 @@ class GUI:
                     x1, y1, x2, y2, fill='', width=0, tag='click-area-vertical')
 
         self.refresh()
-        for i, player in enumerate(self.players):
+        for i, player in enumerate(self.players_oval):
             self.canvas.itemconfig(player, fill=self.player_colors[i])
 
         self.canvas.tag_bind('square', '<Button-1>', self.move)
@@ -71,7 +73,7 @@ class GUI:
                              '<Button-1>', self.on_click_horizontal)
         self.canvas.tag_bind('click-area-vertical',
                              '<Button-1>', self.on_click_vertical)
-        self.canvas.pack()
+        self.canvas.pack()            
 
     def move(self, event):
         if self.game.terminal:
@@ -82,13 +84,18 @@ class GUI:
         valid = self.game.play_game(MOVEMENT, *direction)
         self.refresh()
         if valid:
-            self.root.after(10, self.ai_move)
+            self.root.after(10, self.play_game)
 
-    def ai_move(self):
-        if self.game.ai:
-            print("Thinking...")
-            move = self.game.ai(self.game)
+    def play_game(self):
+        player = self.players[self.game.index]
+        if player == "Human" or player == None:
+            return
+        else:
+            print("Thinking...", end=" ")
+            move = player(self.game)
             self.game.play_game(*move)
+            if hasattr(player, 'alpha'):
+                print("predicted score: ", player.alpha)
             self.refresh()
 
     def find_row_column_by_id(self, find_id):
@@ -118,7 +125,7 @@ class GUI:
         valid = self.add_horizontal_wall(row, column)
         self.refresh()
         if valid:
-            self.root.after(10, self.ai_move)
+            self.root.after(10, self.play_game)
 
 
     def add_vertical_wall(self, row, column, check=True):
@@ -139,11 +146,11 @@ class GUI:
         valid = self.add_vertical_wall(row, column)
         self.refresh()
         if valid:
-            self.root.after(10, self.ai_move)
+            self.root.after(10, self.play_game)
 
 
     def refresh(self):
-        for player, (x, y) in zip(self.players, self.game.players_loc):
+        for player, (x, y) in zip(self.players_oval, self.game.players_loc):
             x = (x + 0.5) * self.CELL_SIZE
             y = (y + 0.5) * self.CELL_SIZE
             self.canvas.coords(player, x - self.r, y -

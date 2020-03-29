@@ -1,16 +1,21 @@
-from sys import argv
+import sys
+sys.path.insert(0,'..')
 from gui import GUI
-from game import Game
+from quoridor.game import Game
+from argparse import ArgumentParser
+import create
+from easyAI import TT
+import cProfile
 import tkinter as tk
 
 
-def main():
+def main(size, game, players):
     root = tk.Tk()
-    game = Game(BOARD_SIZE)
-    GUI(root, game)
+    GUI(root, game, players)
     root.mainloop()
 
 
 if __name__ == '__main__':
-    BOARD_SIZE = int(argv[1])
-    main()
+    size, players = create.game()
+    game = Game(size)
+    main(size, game, players)
