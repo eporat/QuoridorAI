@@ -1,1 +1,1 @@
-python algo.py size 5 player1 --type MCTSPlayer player2 --type Negamax --depth 4
+python algo.py size 5 player1 --type MCTSPlayer --n_playout 1000 player2 --type NonRecursiveNegamax --depth 5 --tt True

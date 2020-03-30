@@ -1,4 +1,5 @@
-from easyAI import MCTS, MTDf, MTDstep, SSS, Negamax, DictTT, TT, HashTT
+from easyAI import MCTS, MTDf, MTDstep, SSS, Negamax, NonRecursiveNegamax
+from easyAI import DictTT, TT, HashTT
 from mcts.mcts_pure import MCTSPlayer
 import sys
 import argparse
@@ -15,7 +16,8 @@ players_dict = {
     'SSS': SSS,
     'Negamax': Negamax,
     'Human': Human,
-    'MCTSPlayer': MCTSPlayer
+    'MCTSPlayer': MCTSPlayer,
+    'NonRecursiveNegamax': NonRecursiveNegamax
 }
 
 def parse_args(parser, commands):
@@ -54,6 +56,7 @@ def create_players(parser):
         sub_parser.add_argument('--iterations', type=int)
         sub_parser.add_argument('--time_limit', type=int)
         sub_parser.add_argument('--tt', type=bool)
+        sub_parser.add_argument('--n_playout', type=int)
 
     size, args = parse_args(parser, commands)
     players = [None] * 2

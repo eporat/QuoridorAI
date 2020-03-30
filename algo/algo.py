@@ -1,6 +1,6 @@
 import sys
 sys.path.insert(0,'..')
-from quoridor.game import *
+from quoridor.game import Game
 import time
 from sys import argv
 import argparse
@@ -33,14 +33,13 @@ saved_game['size'] = size
 saved_game['players'] = []
 
 for player in players:
-    saved_game['players'].append("{player.__class__}")
+    saved_game['players'].append(f"{type(player).__name__}")
+    for attr in set(dir(player)) - set(dir(object)) - set(['alpha', 'win_score']):
+        if type(getattr(player, attr)) is int:
+            saved_game['players'][-1] += f'-{attr}-{getattr(player, attr)}'
 
 saved_game['moves'] = moves
 date_time = now.strftime("%d-%m-%Y-%H-%M-%S")
-
-
-for i, player in enumerate(players):
-    player.tt.tofile(f'{date_time}-{i+1}.data')
 
 def convert(o):
     if isinstance(o, np.int32): return int(o)  

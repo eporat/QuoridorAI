@@ -34,7 +34,6 @@ class Game(TwoPlayersGame):
         self.terminal = False
         self.special_edges = []
         self.end_loc = [self.size - 1, 0]
-        self.actions = None
         self.availables = self.possible_moves()
 
     def possible_moves(self):
@@ -62,7 +61,7 @@ class Game(TwoPlayersGame):
                     if self.is_valid_horizontal(x,y):
                         actions.append((WALL, x, y, HORIZONTAL))
 
-        self.actions = actions
+        random.shuffle(actions)
         return actions
 
     @staticmethod
@@ -226,7 +225,7 @@ class Game(TwoPlayersGame):
         if self.has_edge(p2, p2 + vec):
             self.special_edges.append((tuple(p1), tuple(p2 + vec)))
             return
-        perp1 = np.roll(vec, 1)
+        perp1 = np.array([vec[1], vec[0]])
         perp2 = - perp1
         for perp in (perp1, perp2):
             if self.has_edge(p2, p2 + perp):
