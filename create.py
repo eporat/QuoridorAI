@@ -69,9 +69,9 @@ def create_players(parser):
         args_player = {k: v for k, v in args_player.items() if v is not None}
         if "tt" in args_player:
             args_player.pop("tt")
-            player = players_dict[player_type](win_score=100, tt=TT(), **args_player)
+            player = players_dict[player_type](win_score=1000, tt=TT(), **args_player)
         else:
-            player = players_dict[player_type](win_score=100, **args_player)
+            player = players_dict[player_type](win_score=1000, **args_player)
 
         players[i] = player
 

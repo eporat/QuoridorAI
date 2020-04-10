@@ -73,7 +73,9 @@ class GUI:
                              '<Button-1>', self.on_click_horizontal)
         self.canvas.tag_bind('click-area-vertical',
                              '<Button-1>', self.on_click_vertical)
-        self.canvas.pack()            
+        self.canvas.pack()
+
+        self.play_game()
 
     def move(self, event):
         if self.game.terminal:
@@ -87,16 +89,24 @@ class GUI:
             self.root.after(10, self.play_game)
 
     def play_game(self):
+        print("Game score", self.game.scoring())
         player = self.players[self.game.index]
         if player == "Human" or player == None:
             return
         else:
             print("Thinking...", end=" ")
             move = player(self.game)
+            print(f"game walls are {self.game.wall_counts}")
             self.game.play_game(*move)
             if hasattr(player, 'alpha'):
                 print("predicted score: ", player.alpha)
             self.refresh()
+
+            other_player = self.players[self.game.index]
+
+            if other_player != "Human" and other_player != None:
+                self.root.after(1000, self.play_game)
+
 
     def find_row_column_by_id(self, find_id):
         for (row, column), id in chain(self.click_horizontal.items(), self.click_vertical.items()):
@@ -161,11 +171,11 @@ class GUI:
                 self.canvas.itemconfig(self.rect[row, column], fill='brown')
 
         for x, y in self.game.vertical_walls:
-            if (y, x) not in self.vertical_walls:
+            if (y, x + 1) not in self.vertical_walls:
                 self.add_vertical_wall(y, x + 1, check=False)
 
         for x, y in self.game.horizontal_walls:
-            if (y, x) not in self.horizontal_walls:
+            if (y + 1, x) not in self.horizontal_walls:
                 self.add_horizontal_wall(y + 1, x, check=False)
 
         if self.game.terminal:

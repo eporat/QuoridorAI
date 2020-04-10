@@ -11,3 +11,4 @@ from .MTDstep import MTDstep
 from .HashTT import HashTT
 from .DictTT import DictTT
 from .MCTS import MCTS
+from .Negamax2 import Negamax2

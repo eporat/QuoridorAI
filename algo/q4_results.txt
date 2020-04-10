@@ -1,0 +1,275 @@
+board size is 5 and player1 depth is 1 and player2 depth is 1
+that round took 51.004647731781006 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 1 and player2 depth is 2
+that round took 63.86826205253601 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 1 and player2 depth is 3
+that round took 52.566113233566284 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 1 and player2 depth is 4
+that round took 42.83055067062378 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 1 and player2 depth is 5
+that round took 46.111730098724365 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 2 and player2 depth is 1
+that round took 55.175501346588135 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 2 and player2 depth is 2
+that round took 43.04382801055908 seconds
+white won 15/15
+black won 0/15
+number of draws is 0
+board size is 5 and player1 depth is 2 and player2 depth is 3
+that round took 55.24032974243164 seconds
+white won 15/15
+black won 0/15
+number of draws is 0
+board size is 5 and player1 depth is 2 and player2 depth is 4
+that round took 42.80257749557495 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 2 and player2 depth is 5
+that round took 51.432506799697876 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 3 and player2 depth is 1
+that round took 72.73075890541077 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 3 and player2 depth is 2
+that round took 53.582756996154785 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 3 and player2 depth is 3
+that round took 59.740297079086304 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 3 and player2 depth is 4
+that round took 62.42312550544739 seconds
+white won 1/15
+black won 14/15
+number of draws is 0
+board size is 5 and player1 depth is 3 and player2 depth is 5
+that round took 89.3511393070221 seconds
+white won 15/15
+black won 0/15
+number of draws is 0
+board size is 5 and player1 depth is 4 and player2 depth is 1
+that round took 65.3123676776886 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 4 and player2 depth is 2
+that round took 64.02714729309082 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 4 and player2 depth is 3
+that round took 89.1170711517334 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 4 and player2 depth is 4
+that round took 56.62453293800354 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 4 and player2 depth is 5
+that round took 75.43469548225403 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 5 and player2 depth is 1
+that round took 62.60908031463623 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 5 and player2 depth is 2
+that round took 75.2727689743042 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 5 and player2 depth is 3
+that round took 69.4370596408844 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 5 and player2 depth is 4
+that round took 119.07767128944397 seconds
+white won 15/15
+black won 0/15
+number of draws is 0
+board size is 5 and player1 depth is 5 and player2 depth is 5
+that round took 58.67414689064026 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 1 and player2 depth is 1
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 64.56240582466125 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 1 and player2 depth is 2
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 66.90215158462524 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 1 and player2 depth is 3
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 82.2731385231018 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 1 and player2 depth is 4
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 65.32436871528625 seconds
+white won 1/15
+black won 14/15
+number of draws is 0
+board size is 5 and player1 depth is 1 and player2 depth is 5
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 64.81373238563538 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 2 and player2 depth is 1
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 68.81603574752808 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 2 and player2 depth is 2
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 96.81418657302856 seconds
+white won 4/15
+black won 11/15
+number of draws is 0
+board size is 5 and player1 depth is 2 and player2 depth is 3
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 61.63124203681946 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 2 and player2 depth is 4
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 64.10762596130371 seconds
+white won 14/15
+black won 1/15
+number of draws is 0
+board size is 5 and player1 depth is 2 and player2 depth is 5
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 71.40112519264221 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 3 and player2 depth is 1
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 78.07129311561584 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 3 and player2 depth is 2
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 62.687418937683105 seconds
+white won 1/15
+black won 14/15
+number of draws is 0
+board size is 5 and player1 depth is 3 and player2 depth is 3
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 60.16017484664917 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 3 and player2 depth is 4
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 66.59696841239929 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 3 and player2 depth is 5
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 65.79112315177917 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 4 and player2 depth is 1
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 64.80376124382019 seconds
+white won 14/15
+black won 1/15
+number of draws is 0
+board size is 5 and player1 depth is 4 and player2 depth is 2
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 63.12824058532715 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 4 and player2 depth is 3
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 51.52326416969299 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 4 and player2 depth is 4
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 58.89455699920654 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 4 and player2 depth is 5
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 57.054476499557495 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 5 and player2 depth is 1
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 66.10129237174988 seconds
+white won 15/15
+black won 0/15
+number of draws is 0
+board size is 5 and player1 depth is 5 and player2 depth is 2
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 72.80337572097778 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 5 and player2 depth is 3
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 52.65024995803833 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 5 and player2 depth is 4
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 68.91277742385864 seconds
+white won 0/15
+black won 15/15
+number of draws is 0
+board size is 5 and player1 depth is 5 and player2 depth is 5
+PLAYER 1 HAS SHUFFLE. PLAYER 2 DOES NOT
+that round took 63.09931659698486 seconds
+white won 14/15
+black won 1/15
+number of draws is 0

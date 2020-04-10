@@ -4,9 +4,10 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 from itertools import product
-from easyAI import TwoPlayersGame
 import copy
 import random
+from easyAI import TwoPlayersGame
+
 
 HORIZONTAL = 0
 VERTICAL = 1
@@ -14,27 +15,37 @@ VERTICAL = 1
 MOVEMENT = 0
 WALL = 1
 
-WALL_SCORE = 0.5 
+WALL_SCORE = 0 # Notice that wall score is 0 now!!!
 DISTANCE_SCORE = 1
+
 
 DELTA = [(-2, 0), (2, 0), (0, 2), (0, -2), (-1, 1), (-1, -1), (1, -1), (1, 1), (0, 1), (0, -1), (1, 0), (-1, 0)]
 
+
 class Game(TwoPlayersGame):
-    def __init__(self, size):
+    def __init__(self, size, wall_counts=None, wall_dist = [100,100]):
+        self.wall_dist = wall_dist
         self.size = size
+        self.wall_counts = [self.size + 1, self.size + 1]
+        self.walls_graph = nx.grid_2d_graph(self.size - 1, self.size - 1)
+        if wall_counts:
+            self.wall_counts = wall_counts
         self.nplayer = 1
         # self.players = players
         self.graph = nx.grid_2d_graph(self.size, self.size)
         self.players_loc = [np.array([self.size // 2, 0]),
                         np.array([self.size // 2, self.size - 1])]
-        self.wall_counts = [self.size + 1, self.size + 1]
+
         self.vertical_walls = set()
         self.horizontal_walls = set()
         self.index = 0
         self.terminal = False
         self.special_edges = []
         self.end_loc = [self.size - 1, 0]
-        self.availables = self.possible_moves()
+        # self.availables = self.possible_moves()
+
+    def distance(self, index, loc):
+        return abs(self.players_loc[index][0] - loc[0]) + abs(self.players_loc[index][1] - loc[1])
 
     def possible_moves(self):
         if self.is_terminal():
@@ -44,15 +55,15 @@ class Game(TwoPlayersGame):
         p = self.players_loc[self.index]
         o = self.players_loc[1 - self.index]
 
-        # for cell in sorted(self.available_cells(), key=lambda cell: abs(cell[0] - p[0]) + abs(cell[1] - p[1]), reverse=True):
-        #     actions.append((MOVEMENT, cell[0] - p[0], cell[1] - p[1]))
-        for cell in self.available_cells():
-            actions.append((MOVEMENT, cell[0] - p[0], cell[1] - p[1]))
-        
+        for cell in sorted(self.available_cells(), key=lambda cell: abs(cell[0] - p[0]) + abs(cell[1] - p[1]), reverse=True):
+             actions.append((MOVEMENT, cell[0] - p[0], cell[1] - p[1]))
+        #for cell in self.available_cells():
+        #    actions.append((MOVEMENT, cell[0] - p[0], cell[1] - p[1]))
 
-        if self.wall_counts[self.index] > 0:  
+
+        if self.wall_counts[self.index] > 0:
             # locations = sorted(self.graph.nodes(), key=lambda cell: abs(cell[0] - o[0]) + abs(cell[1] - o[1]))
-    
+
             for x in range(self.size - 1):
                 for y in range(self.size - 1):
                     if self.is_valid_vertical(x,y):
@@ -61,7 +72,9 @@ class Game(TwoPlayersGame):
                     if self.is_valid_horizontal(x,y):
                         actions.append((WALL, x, y, HORIZONTAL))
 
-        random.shuffle(actions)
+        #random.shuffle(actions) # exists already in negamax player!
+        # The actions are sorted in a way that moves are first and walls are seconds
+        # the moves are ordered by jumping moves and then normal moves
         return actions
 
     @staticmethod
@@ -124,27 +137,27 @@ class Game(TwoPlayersGame):
         self.vertical_walls.add((x,y))
         return edges
 
-    def unmake_move(self, move):
-        if move[0] == MOVEMENT:
-            self.players_loc[1 - self.index][0] -= move[1]
-            self.players_loc[1 - self.index][1] -= move[2]
-            self.terminal = self.players_loc[1 - self.index][1] == self.end_loc[1 - self.index]
-
-        elif move[0] == WALL:
-            self.graph.add_edges_from(Game.edges(move[1], move[2], move[3]))
-            
-            if move[3] == HORIZONTAL:
-                self.horizontal_walls.remove((move[1], move[2]))
-            elif move[3] == VERTICAL:
-                self.vertical_walls.remove((move[1], move[2]))
-            
-            self.wall_counts[1 - self.index] += 1
-
-        self.graph.remove_edges_from(self.special_edges)
-        self.next_turn()
-        self.find_special_edges()
-        self.graph.add_edges_from(self.special_edges)
-        self.availables = self.possible_moves()
+    # def unmake_move(self, move):
+    #     if move[0] == MOVEMENT:
+    #         self.players_loc[1 - self.index][0] -= move[1]
+    #         self.players_loc[1 - self.index][1] -= move[2]
+    #         self.terminal = self.players_loc[1 - self.index][1] == self.end_loc[1 - self.index]
+    #
+    #     elif move[0] == WALL:
+    #         self.graph.add_edges_from(Game.edges(move[1], move[2], move[3]))
+    #
+    #         if move[3] == HORIZONTAL:
+    #             self.horizontal_walls.remove((move[1], move[2]))
+    #         elif move[3] == VERTICAL:
+    #             self.vertical_walls.remove((move[1], move[2]))
+    #
+    #         self.wall_counts[1 - self.index] += 1
+    #
+    #     self.graph.remove_edges_from(self.special_edges)
+    #     self.next_turn()
+    #     self.find_special_edges()
+    #     self.graph.add_edges_from(self.special_edges)
+    #     self.availables = self.possible_moves()
 
     def place_wall(self, x, y, orientation):
         if not self.wall_counts[self.index]:
@@ -266,7 +279,7 @@ class Game(TwoPlayersGame):
                 return 1000
             else:
                 return -1000
-        
+
         if self.players_loc[1][1] == 0:
             if self.index == 0:
                 return -1000
@@ -279,13 +292,12 @@ class Game(TwoPlayersGame):
         con2 = nx.node_connected_component(self.graph, tuple(self.players_loc[1]))
         con2 = filter(lambda x: x[1] == 0, con2)
         d2 = min(nx.shortest_path_length(self.graph, tuple(self.players_loc[1]), node) for node in con2)
-        wall_score = WALL_SCORE * (self.wall_counts[1] - self.wall_counts[0])     
-        distance_score = DISTANCE_SCORE * (d2 - d1)
+        distance_score = d2 - d1
 
         if self.index == 0:
-            return distance_score - wall_score
+            return distance_score
         else:
-            return - distance_score + wall_score
+            return -distance_score
 
     def ttentry(self):
         return (tuple(self.players_loc[0]), tuple(self.players_loc[1]), tuple(self.horizontal_walls), tuple(self.vertical_walls), tuple(self.wall_counts), self.terminal, self.index, self.nplayer)
@@ -305,7 +317,7 @@ class Game(TwoPlayersGame):
             self.graph.remove_edges_from(Game.edges(x, y, HORIZONTAL))
         for (x, y) in vertical_walls:
             self.graph.remove_edges_from(Game.edges(x, y, VERTICAL))
-               
+
         self.wall_counts = list(wall_counts)
         self.index = index
         self.terminal = terminal
