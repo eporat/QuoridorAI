@@ -9,8 +9,8 @@ import cProfile
 import tkinter as tk
 from genetic import *
 
-DEPTH = 1
+DEPTH = 3
 SIZE = 5
 
-pop = Population(depth=DEPTH, size=SIZE, tt_file_name="genetic/size5/walls_worth.data", count=10, mutation_rate=0.02, gene_size=2)
-pop.run_games(10)
+pop = Population(depth=DEPTH, size=SIZE, tt_file_name="genetic/size5/walls_worth.data", count=20, mutation_rate=0.05, gene_size=2)
+pop.run_games(100)

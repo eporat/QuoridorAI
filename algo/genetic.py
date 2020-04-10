@@ -210,7 +210,7 @@ class Population:
             for i, gene1 in enumerate(self.genes):
                 for j, gene2 in enumerate(self.genes):
 
-                    if game_count % 10 == 0:
+                    if game_count % 100 == 0:
                         self.tt.tofile(self.tt_file_name)
                         print(f"Played game: {game_count} / {num_games}")
 

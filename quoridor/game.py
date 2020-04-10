@@ -137,27 +137,27 @@ class Game(TwoPlayersGame):
         self.vertical_walls.add((x,y))
         return edges
 
-    # def unmake_move(self, move):
-    #     if move[0] == MOVEMENT:
-    #         self.players_loc[1 - self.index][0] -= move[1]
-    #         self.players_loc[1 - self.index][1] -= move[2]
-    #         self.terminal = self.players_loc[1 - self.index][1] == self.end_loc[1 - self.index]
-    #
-    #     elif move[0] == WALL:
-    #         self.graph.add_edges_from(Game.edges(move[1], move[2], move[3]))
-    #
-    #         if move[3] == HORIZONTAL:
-    #             self.horizontal_walls.remove((move[1], move[2]))
-    #         elif move[3] == VERTICAL:
-    #             self.vertical_walls.remove((move[1], move[2]))
-    #
-    #         self.wall_counts[1 - self.index] += 1
-    #
-    #     self.graph.remove_edges_from(self.special_edges)
-    #     self.next_turn()
-    #     self.find_special_edges()
-    #     self.graph.add_edges_from(self.special_edges)
-    #     self.availables = self.possible_moves()
+    def unmake_move(self, move):
+        if move[0] == MOVEMENT:
+            self.players_loc[1 - self.index][0] -= move[1]
+            self.players_loc[1 - self.index][1] -= move[2]
+            self.terminal = self.players_loc[1 - self.index][1] == self.end_loc[1 - self.index]
+
+        elif move[0] == WALL:
+            self.graph.add_edges_from(Game.edges(move[1], move[2], move[3]))
+
+            if move[3] == HORIZONTAL:
+                self.horizontal_walls.remove((move[1], move[2]))
+            elif move[3] == VERTICAL:
+                self.vertical_walls.remove((move[1], move[2]))
+
+            self.wall_counts[1 - self.index] += 1
+
+        self.graph.remove_edges_from(self.special_edges)
+        self.next_turn()
+        self.find_special_edges()
+        self.graph.add_edges_from(self.special_edges)
+        self.availables = self.possible_moves()
 
     def place_wall(self, x, y, orientation):
         if not self.wall_counts[self.index]:

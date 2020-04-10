@@ -57,7 +57,9 @@ def negamax(game, depth, origDepth, scoring, alpha=+inf, beta=-inf,
         if score == 0:
             return score
         else:
-            return score - 0.01*depth
+            if abs(score) >= 1000:
+                return score - 0.01*depth
+            return score
 
 
     if lookup != None:
