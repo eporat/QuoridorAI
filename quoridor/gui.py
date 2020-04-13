@@ -75,7 +75,7 @@ class GUI:
                              '<Button-1>', self.on_click_vertical)
         self.canvas.pack()
 
-        self.play_game()
+        self.root.after(100, self.play_game)
 
     def move(self, event):
         if self.game.terminal:
