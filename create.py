@@ -1,5 +1,6 @@
 from easyAI import MCTS, MTDf, MTDstep, SSS, Negamax, NonRecursiveNegamax
 from easyAI import DictTT, TT, HashTT
+from quoridor.game import Game
 from mcts.mcts_pure import MCTSPlayer
 import sys
 import argparse
@@ -24,9 +25,6 @@ def parse_args(parser, commands):
     # Divide argv by commands
     split_argv = [[]]
 
-    size = int(sys.argv[2])
-    sys.argv = sys.argv[2:]
-
     for c in sys.argv[1:]:
         if c in commands.choices:
             split_argv.append([c])
@@ -42,12 +40,14 @@ def parse_args(parser, commands):
         n = argparse.Namespace()
         setattr(args, argv[0], n)
         parser.parse_args(argv, namespace=n)
-    
-    return size, args
+
+    return args
 
 
 def create_players(parser):
     commands = parser.add_subparsers(title='sub-commands')
+    parser.add_argument('--size', type=int)
+    parser.add_argument('--wall_dist', type=str)
 
     for i in range(2):
         sub_parser = commands.add_parser(f'player{i+1}')
@@ -58,7 +58,7 @@ def create_players(parser):
         sub_parser.add_argument('--tt', type=bool)
         sub_parser.add_argument('--n_playout', type=int)
 
-    size, args = parse_args(parser, commands)
+    args = parse_args(parser, commands)
     players = [None] * 2
     args = vars(args)
 
@@ -75,12 +75,9 @@ def create_players(parser):
 
         players[i] = player
 
-    return size, players
+    wall_dist = [int(x) for x in args['wall_dist'].split(",")] if args['wall_dist'] else [100, 100]
+    return Game(args['size'], wall_dist=wall_dist), players
 
 def game():
     parser = argparse.ArgumentParser()
-    size, players = create_players(parser)
-    
-    return size, players
-
-
+    return create_players(parser)

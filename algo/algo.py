@@ -1,6 +1,8 @@
 import sys
 sys.path.insert(0,'..')
 from quoridor.game import Game
+from quoridor.gui import GUI
+import tkinter as tk
 import time
 from sys import argv
 import argparse
@@ -11,9 +13,9 @@ import create
 
 now = datetime.now()
 
-size, players = create.game()
+gui = True
+game, players = create.game()
 
-game = Game(size)
 moves = []
 index = 0
 
@@ -29,7 +31,7 @@ while not game.is_terminal():
     index = 1 - index
 
 saved_game = dict()
-saved_game['size'] = size
+saved_game['size'] = game.size
 saved_game['players'] = []
 
 for player in players:

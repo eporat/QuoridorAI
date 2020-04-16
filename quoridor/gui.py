@@ -2,13 +2,29 @@ import tkinter as tk
 from functools import partial
 from itertools import chain
 from quoridor.game import Game, MOVEMENT, WALL, HORIZONTAL, VERTICAL
+from datetime import datetime
+from PIL import Image
+import os
+import time
 
+def save_as_png(canvas,fileName):
+    # save postscipt image 
+    canvas.postscript(file = fileName + '.eps') 
+    # use PIL to convert to PNG 
+    img = Image.open(fileName + '.eps')
+    path = fileName.split("/")
+    img.save('/'.join(path[:-1]) + '/gif/' + path[-1] + '.png', 'png') 
 
 class GUI:
     def __init__(self, root, game, players):
+        now = datetime.now()
+        self.date_time = now.strftime("%d-%m-%Y-%H-%M-%S")
+        os.mkdir(f'saved-games/{self.date_time}')
+        os.mkdir(f'saved-games/{self.date_time}/gif')
         self.root = root
         self.game = game
         self.players = players
+        self.turn = 0
 
         self.canvas = tk.Canvas(self.root, width=500, height=500,
                                 borderwidth=0, highlightthickness=0, background='gray')
@@ -90,13 +106,14 @@ class GUI:
 
     def play_game(self):
         print("Game score", self.game.scoring())
+        save_as_png(self.canvas, f"saved-games/{self.date_time}/{self.turn}")
+        self.turn += 1
         player = self.players[self.game.index]
         if player == "Human" or player == None:
             return
         else:
             print("Thinking...", end=" ")
             move = player(self.game)
-            print(f"game walls are {self.game.wall_counts}")
             self.game.play_game(*move)
             if hasattr(player, 'alpha'):
                 print("predicted score: ", player.alpha)

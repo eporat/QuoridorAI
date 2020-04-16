@@ -8,14 +8,15 @@ from easyAI import TT
 import cProfile
 import tkinter as tk
 
+from mcts.mcts_pure import MCTSPlayer
 
-def main(size, game, players):
+
+def main(game, players):
     root = tk.Tk()
     GUI(root, game, players)
     root.mainloop()
 
 
 if __name__ == '__main__':
-    size, players = create.game()
-    game = Game(size)
-    main(size, game, players)
+    game, players = create.game()
+    main(game, players)

@@ -8,7 +8,7 @@ from itertools import product
 import copy
 import random
 from easyAI import TwoPlayersGame
-
+import traceback
 
 HORIZONTAL = 0
 VERTICAL = 1
@@ -33,9 +33,8 @@ graphs = {
 
 
 class Game(TwoPlayersGame):
-    def __init__(self, size, wall_counts=None, wall_dist=[1,1]):
+    def __init__(self, size, wall_counts=None, wall_dist=[100,100]):
         self.wall_dist = wall_dist
-        print(self.wall_dist)
         self.size = size
         self.wall_counts = [self.size + 1, self.size + 1]
 
@@ -71,8 +70,8 @@ class Game(TwoPlayersGame):
         if self.is_terminal():
             return []
         
-        if hash(self) in POSSIBLE_MOVES:
-            return POSSIBLE_MOVES[hash(self)]
+        if hash(self.ttentry()) in POSSIBLE_MOVES:
+            return POSSIBLE_MOVES[hash(self.ttentry())]
 
         actions = []
         p = self.players_loc[self.index]
@@ -96,7 +95,7 @@ class Game(TwoPlayersGame):
         # The actions are sorted in a way that moves are first and walls are seconds
         # the moves are ordered by jumping moves and then normal moves
 
-        POSSIBLE_MOVES[hash(self)] = actions
+        POSSIBLE_MOVES[hash(self.ttentry())] = actions
         return actions
 
     def edges(self, x, y, orientation):
@@ -142,18 +141,24 @@ class Game(TwoPlayersGame):
 
         return edges
 
-    def place_horizontal(self, x, y):
-        edges = self.is_valid_horizontal(x, y)
-        if not edges:
-            return
+    def place_horizontal(self, x, y, check=True):
+        if not check:
+            edges = self.edges(x, y, HORIZONTAL)
+        else:
+            edges = self.is_valid_horizontal(x, y)
+            if not edges:
+                return
         self.graph_remove(edges)
         self.horizontal_walls.add((x,y))
         return edges
 
-    def place_vertical(self, x, y):
-        edges = self.is_valid_vertical(x, y)
-        if not edges:
-            return
+    def place_vertical(self, x, y, check=True):
+        if not check:
+            edges = self.edges(x, y, VERTICAL)
+        else:
+            edges = self.is_valid_vertical(x, y)
+            if not edges:
+                return
         self.graph_remove(edges)
         self.vertical_walls.add((x,y))
         return edges
@@ -180,15 +185,15 @@ class Game(TwoPlayersGame):
         self.graph_add(self.special_edges)
         # self.availables = self.possible_moves()
 
-    def place_wall(self, x, y, orientation):
+    def place_wall(self, x, y, orientation, check=True):
         if not self.wall_counts[self.index]:
             return False
         if x == self.size - 1 or y == self.size - 1:
             return False
         if orientation == HORIZONTAL:
-            edges = self.place_horizontal(x, y)
+            edges = self.place_horizontal(x, y, check=check)
         elif orientation == VERTICAL:
-            edges = self.place_vertical(x, y)
+            edges = self.place_vertical(x, y, check=check)
         if not edges:
             return False
         self.wall_counts[self.index] -= 1
@@ -201,15 +206,19 @@ class Game(TwoPlayersGame):
     def check_connected(self):
         # Make sure there are still ways to reach the end
         self.graph_remove(self.special_edges)
-        connected = any(self.path_length(self.players_loc[0], (x,self.size-1)) < self.size * self.size for x in range(self.size)) \
-            and any(self.path_length(self.players_loc[1], (x,0))  < self.size * self.size for x in range(self.size))
+        connected = min(self.graph.shortest_paths_dijkstra(self.node_id(self.players_loc[0]), [self.node_id((x,self.size-1)) for x in range(self.size)])[0]) < self.size * self.size
+        if not connected:
+            self.graph_add(self.special_edges)
+            return False
+
+        connected = min(self.graph.shortest_paths_dijkstra(self.node_id(self.players_loc[1]), [self.node_id((x,0)) for x in range(self.size)])[0]) < self.size * self.size
         self.graph_add(self.special_edges)
         return connected
 
-    def move_player(self, direction_x, direction_y):
+    def move_player(self, direction_x, direction_y, check=True):
         direction = np.array([direction_x, direction_y])
         p = self.players_loc[self.index]
-        if not self.has_edge(p, p + direction):
+        if check and not self.has_edge(p, p + direction):
             return False
         self.players_loc[self.index] += direction
         if p[1] == (1 - self.size) * (self.index - 1):
@@ -222,20 +231,21 @@ class Game(TwoPlayersGame):
     def next_turn(self):
         self.index = 1 - self.index
 
-    def play_game(self, type, param1, param2=None, param3=None):
+    def play_game(self, type, param1, param2=None, param3=None, check=True):
         if self.is_terminal():
             return
         if type == MOVEMENT:
-            valid = self.move_player(direction_x=param1, direction_y=param2)
+            valid = self.move_player(direction_x=param1, direction_y=param2, check=check)
         elif type == WALL:
-            valid = self.place_wall(x=param1, y=param2, orientation=param3)
+            valid = self.place_wall(x=param1, y=param2, orientation=param3, check=check)
         if not valid:
             return False
         self.graph_remove(self.special_edges)
         self.next_turn()
         self.find_special_edges()
         self.graph_add(self.special_edges)
-        self.availables = self.possible_moves()
+        if check:
+            self.availables = self.possible_moves()
         return True
 
     def available_cells(self):
@@ -272,10 +282,10 @@ class Game(TwoPlayersGame):
         if a[0] < 0 or a[1] < 0 or b[0] < 0 or b[1] < 0 or a[0] > self.size - 1 or a[1] > self.size - 1 or b[0] > self.size - 1 or b[1] > self.size - 1:
             return False
 
-        return len(self.graph.es.select(_from=self.node_id(a), _to=self.node_id(b)))
+        return self.graph.are_connected(self.node_id(a), self.node_id(b))
 
-    def make_move(self, action):
-        self.play_game(*action)
+    def make_move(self, action, check=True):
+        self.play_game(*action, check=check)
 
     def is_terminal(self):
         return self.terminal
@@ -285,7 +295,7 @@ class Game(TwoPlayersGame):
 
     def perform(self, action):
         self_copy = copy.deepcopy(self)
-        self_copy.make_move(action)
+        self_copy.make_move(action, check=False)
         return self_copy
 
     def game_end(self):
@@ -310,8 +320,8 @@ class Game(TwoPlayersGame):
             else:
                 return 1000
     
-        d1 = min(self.path_length(self.players_loc[0], (x,self.size-1)) for x in range(self.size))
-        d2 = min(self.path_length(self.players_loc[1], (x,0)) for x in range(self.size))
+        d1 = min(self.graph.shortest_paths_dijkstra(self.node_id(self.players_loc[0]), [self.node_id((x,self.size-1)) for x in range(self.size)])[0]) 
+        d2 = min(self.graph.shortest_paths_dijkstra(self.node_id(self.players_loc[1]), [self.node_id((x,0)) for x in range(self.size)])[0])
         distance_score = d2 - d1
 
         if self.index == 0:
@@ -325,6 +335,11 @@ class Game(TwoPlayersGame):
     def __hash__(self):
         return hash(self.ttentry())
 
+    def move_score(self, move):
+        self.make_move(move, check=False)
+        score = self.scoring()
+        self.unmake_move(move)
+        return score
     # def ttrestore(self, entry):
     #     player_loc_0, player_loc_1, horizontal_walls, vertical_walls, wall_counts, terminal, index, nplayer = entry
     #     self.graph = nx.grid_2d_graph(self.size, self.size)
@@ -350,7 +365,9 @@ class Game(TwoPlayersGame):
         return self.ttentry() == other.ttentry()
 
     def graph_add(self, edges):
-        self.graph.add_edges(list(map(self.edge_id, edges)))        
+        if len(edges):
+            self.graph.add_edges(list(map(self.edge_id, edges)))        
 
     def graph_remove(self, edges):
-        self.graph.delete_edges(list(map(self.edge_id, edges)))        
+        if len(edges):
+            self.graph.delete_edges(list(map(self.edge_id, edges)))

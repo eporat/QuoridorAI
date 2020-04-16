@@ -23,6 +23,10 @@ def negamax(game, depth, origDepth, scoring, alpha=+inf, beta=-inf,
 
     #if tt != None:
         #tt.d.num_calcs += 1
+    # if Negamax.moves % 100 == 0:
+    #     print(Negamax.moves)
+
+    Negamax.moves += 1
 
     alphaOrig = alpha
 
@@ -187,10 +191,13 @@ class Negamax:
         """
         Returns the AI's best move given the current state of the game.
         """
-
+        Negamax.moves = 0
         scoring = self.scoring if self.scoring else (
                        lambda g: g.scoring() ) # horrible hack
 
         self.alpha = negamax(game, self.depth, self.depth, scoring,
                      -self.win_score, +self.win_score, self.tt, self.shuffle)
+        print(f"Number of moves (negamax) {Negamax.moves}")
         return game.ai_move
+
+Negamax.moves = 0

@@ -10,20 +10,32 @@ import copy
 from operator import itemgetter
 from quoridor.game import Game
 from tqdm import tqdm
+from easyAI import Negamax, TT
+from scipy.special import softmax
+import random
+# negamax = Negamax(depth=1, tt=TT(), win_score=100)
+saved_games = {}
 
-
+negamax = Negamax(depth=1, tt=TT())
 def rollout_policy_fn(game):
-    """a coarse, fast version of policy_fn used in the rollout phase."""
-    # rollout randomly
-    action_probs = np.random.rand(len(game.availables))
-    return zip(game.availables, action_probs)
+    # """a coarse, fast version of policy_fn used in the rollout phase."""
+    # return negamax(game)
+    return min(game.availables, key=lambda move: game.move_score(move))
 
+# def rollout_policy_fn(game):
+#     """a coarse, fast version of policy_fn used in the rollout phase."""
+#     # rollout randomly
+#     return random.choice(game.availables)
 
 def policy_value_fn(game):
     """a function that takes in a game and outputs a list of (action, probability)
     tuples and a score for the game"""
     # return uniform probabilities and 0 score for pure MCTS
-    action_probs = np.ones(len(game.availables))/len(game.availables)
+    # action_probs = np.ones(len(game.availables))/len(game.availables)
+    if len(game.availables) == 0:
+        action_probs = np.ones(len(game.availables))/len(game.availables)
+    else:
+        action_probs = softmax([- game.move_score(move) for move in game.availables])
     return zip(game.availables, action_probs), 0
 
 
@@ -94,6 +106,11 @@ class TreeNode(object):
     def is_root(self):
         return self._parent is None
 
+    def size(self):
+        if self.is_leaf():
+            return 1
+        
+        return 1 + sum(child.size() for child in self._children.values())
 
 class MCTS(object):
     """A simple implementation of Monte Carlo Tree Search."""
@@ -125,12 +142,13 @@ class MCTS(object):
                 break
             # Greedily select next move.
             action, node = node.select(self._c_puct)
-            game.make_move(action)
+            game.make_move(action, check=False)
 
-        action_probs, _ = self._policy(game)
+        game.availables = game.possible_moves()
         # Check for end of game
         end, winner = game.game_end()
         if not end:
+            action_probs, _ = self._policy(game)
             node.expand(action_probs)
         # Evaluate the leaf node by random rollout
         leaf_value = self._evaluate_rollout(game)
@@ -143,16 +161,16 @@ class MCTS(object):
         and 0 if it is a tie.
         """
         player = game.get_current_player()
+
         for i in range(limit):
             end, winner = game.game_end()
+                
             if end:
                 break
-            action_probs = rollout_policy_fn(game)
-            max_action = max(action_probs, key=itemgetter(1))[0]
+
+            max_action = rollout_policy_fn(game)
             game.make_move(max_action)
-        else:
-            # If no break from the loop, issue a warning.
-            print("WARNING: rollout reached move limit")
+
         if winner == -1:  # tie
             return 0
         else:
@@ -182,10 +200,13 @@ class MCTS(object):
     def __str__(self):
         return "MCTS"
 
+    def size(self):
+        return self._root.size()
+
 
 class MCTSPlayer(object):
     """AI player based on MCTS"""
-    def __init__(self, c_puct=5, n_playout=10000, win_score=1000):
+    def __init__(self, c_puct=3, n_playout=10000, win_score=1000):
         self.mcts = MCTS(policy_value_fn, c_puct, n_playout)
         self.win_score = win_score
         self.n_playout = n_playout
@@ -200,6 +221,7 @@ class MCTSPlayer(object):
     def __call__(self, game):
         sensible_moves = game.availables
         move = self.mcts.get_move(game)
+        print(f"Tree Size: {self.mcts.size()}")
         self.mcts.update_with_move(-1)
         return move
 
